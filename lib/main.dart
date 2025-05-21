@@ -1,4 +1,3 @@
-// main.dart
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -38,6 +37,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   late TabController _tabController;
   List<dynamic> _data = [];
   bool _loading = true;
+  final String token = 'ec2a7cbe2fa50783346b1f7c6c99dc036fa908d4';
 
   @override
   void initState() {
@@ -60,8 +60,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       default:
         endpoint = 'access-logs/';
     }
-    final url = Uri.parse('https://gatekeepr.onrender.com/api/v1/$endpoint');
-    final res = await http.get(url);
+    final url = Uri.parse('https://gatekeepr-backend.onrender.com/api/v1/$endpoint');
+    final res = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Token $token',
+      },
+    );
+
     if (res.statusCode == 200) {
       setState(() => _data = json.decode(res.body));
     } else {
@@ -72,7 +78,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final accent = Theme.of(context).colorScheme.secondary;
+    final accent = Theme.of(context).accentColor;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
@@ -81,7 +87,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           children: [
             Image.asset('assets/images/auth.png', height: 32),
             SizedBox(width: 8),
-            Text('Gatekeepr', style: TextStyle(color: accent)),
+            Text('Gatekeepr Logs', style: TextStyle(color: accent)),
           ],
         ),
         bottom: TabBar(
@@ -133,4 +139,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       ),
     );
   }
+}
+
+extension on ThemeData {
+   get accentColor => null;
 }
